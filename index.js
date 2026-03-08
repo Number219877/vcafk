@@ -7,35 +7,37 @@ const app = express();
 
 const TOKEN = process.env.TOKEN;
 const CHANNEL_ID = process.env.CHANNEL_ID;
-const GUILD_ID = process.env.GUILD_ID;
 
-let connection = null;
+let connection;
 
 async function joinVC() {
     try {
         const channel = await client.channels.fetch(CHANNEL_ID);
 
         connection = joinVoiceChannel({
-            channelId: CHANNEL_ID,
-            guildId: GUILD_ID,
+            channelId: channel.id,
+            guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator,
             selfDeaf: true
         });
 
-        console.log("Joined voice channel");
+        console.log("Joined VC");
+
     } catch (err) {
         console.log("Join error:", err);
     }
 }
 
 client.on("ready", async () => {
+
     console.log("Logged in as " + client.user.tag);
 
     await joinVC();
 
-    // Reconnect every 1 hour
+    // every 1 hour
     setInterval(async () => {
-        console.log("Reconnecting to VC...");
+
+        console.log("1 hour completed, leaving VC");
 
         try {
             if (connection) {
@@ -43,12 +45,18 @@ client.on("ready", async () => {
             }
         } catch {}
 
-        await joinVC();
+        console.log("Waiting 1 minute before rejoining...");
 
-    }, 60 * 60 * 1000);
+        // wait 1 minute
+        setTimeout(async () => {
+            await joinVC();
+        }, 60 * 1000);
+
+    }, 60 * 60 * 1000); // 1 hour
 });
 
 client.login(TOKEN);
 
+// keep render alive
 app.get("/", (req,res)=>res.send("running"));
 app.listen(3000);
