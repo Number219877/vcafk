@@ -1,5 +1,5 @@
 {
-  "name": "vc-afk",
+  "name": "discord-vc-afk",
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
