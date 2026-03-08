@@ -24,7 +24,7 @@ async function joinVC() {
         console.log("Joined VC");
 
     } catch (err) {
-        console.log("Join error:", err);
+        console.log("VC Join Error:", err);
     }
 }
 
@@ -34,29 +34,27 @@ client.on("ready", async () => {
 
     await joinVC();
 
-    // every 1 hour
+    // repeat every hour
     setInterval(async () => {
 
-        console.log("1 hour completed, leaving VC");
+        console.log("1 hour completed → leaving VC");
 
         try {
-            if (connection) {
-                connection.destroy();
-            }
+            if (connection) connection.destroy();
         } catch {}
 
-        console.log("Waiting 1 minute before rejoining...");
+        console.log("Waiting 1 minute...");
 
-        // wait 1 minute
         setTimeout(async () => {
             await joinVC();
         }, 60 * 1000);
 
-    }, 60 * 60 * 1000); // 1 hour
+    }, 60 * 60 * 1000);
+
 });
 
 client.login(TOKEN);
 
-// keep render alive
+// keep render service alive
 app.get("/", (req,res)=>res.send("running"));
 app.listen(3000);
