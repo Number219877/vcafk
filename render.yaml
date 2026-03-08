@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: discord-vc-afk
-    env: node
-    buildCommand: npm install
-    startCommand: node index.js
