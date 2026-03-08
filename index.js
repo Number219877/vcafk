@@ -7,25 +7,22 @@ const app = express();
 
 const TOKEN = process.env.TOKEN;
 const CHANNEL_ID = process.env.CHANNEL_ID;
+const GUILD_ID = process.env.GUILD_ID;
 
 let connection;
 
 async function joinVC() {
-    try {
-        const channel = await client.channels.fetch(CHANNEL_ID);
 
-        connection = joinVoiceChannel({
-            channelId: channel.id,
-            guildId: channel.guild.id,
-            adapterCreator: channel.guild.voiceAdapterCreator,
-            selfDeaf: true
-        });
+    const channel = await client.channels.fetch(CHANNEL_ID);
 
-        console.log("Joined VC");
+    connection = joinVoiceChannel({
+        channelId: CHANNEL_ID,
+        guildId: GUILD_ID,
+        adapterCreator: channel.guild.voiceAdapterCreator,
+        selfDeaf: true,
+    });
 
-    } catch (err) {
-        console.log("VC Join Error:", err);
-    }
+    console.log("Joined VC");
 }
 
 client.on("ready", async () => {
@@ -34,27 +31,27 @@ client.on("ready", async () => {
 
     await joinVC();
 
-    // repeat every hour
     setInterval(async () => {
 
-        console.log("1 hour completed → leaving VC");
+        console.log("1 hour completed, leaving VC");
 
         try {
-            if (connection) connection.destroy();
-        } catch {}
+            if (connection) {
+                connection.destroy();
+            }
+        } catch (e) {}
 
-        console.log("Waiting 1 minute...");
+        console.log("Waiting 1 minute before rejoining");
 
         setTimeout(async () => {
             await joinVC();
         }, 60 * 1000);
 
-    }, 60 * 60 * 1000);
+    }, 60 * 60 * 1000); // 1 hour
 
 });
 
 client.login(TOKEN);
 
-// keep render service alive
 app.get("/", (req,res)=>res.send("running"));
 app.listen(3000);
