@@ -9,12 +9,20 @@ const TOKEN = process.env.TOKEN;
 const CHANNEL_ID = process.env.CHANNEL_ID;
 const GUILD_ID = process.env.GUILD_ID;
 
+console.log("Starting bot...");
+console.log("TOKEN:", TOKEN ? "Loaded" : "Missing");
+
 let connection;
 
 async function joinVC() {
     try {
 
         const channel = await client.channels.fetch(CHANNEL_ID);
+
+        if (!channel) {
+            console.log("Channel not found");
+            return;
+        }
 
         connection = joinVoiceChannel({
             channelId: CHANNEL_ID,
@@ -41,9 +49,7 @@ client.on("ready", async () => {
         console.log("1 hour completed → leaving VC");
 
         try {
-            if (connection) {
-                connection.destroy();
-            }
+            if (connection) connection.destroy();
         } catch {}
 
         console.log("Waiting 1 minute before rejoining");
@@ -60,4 +66,4 @@ client.login(TOKEN);
 
 app.get("/", (req,res)=>res.send("running"));
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
