@@ -2,7 +2,9 @@ const { Client } = require("discord.js-selfbot-v13");
 const { joinVoiceChannel } = require("@discordjs/voice");
 const express = require("express");
 
-const client = new Client();
+const client = new Client({
+  checkUpdate: false
+});
 const app = express();
 
 const TOKEN = process.env.TOKEN;
@@ -38,7 +40,7 @@ async function joinVC() {
     }
 }
 
-client.on("ready", async () => {
+client.once("ready", async () => {
 
     console.log("Logged in as " + client.user.tag);
 
@@ -62,7 +64,9 @@ client.on("ready", async () => {
 
 });
 
-client.login(TOKEN);
+client.login(TOKEN).catch(err => {
+console.log("Login Error:", err);
+});
 
 app.get("/", (req,res)=>res.send("running"));
 
